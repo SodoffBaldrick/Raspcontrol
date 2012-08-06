@@ -1,22 +1,11 @@
 <?php
 	class hddPercentage {
 		function freeStorage(){
+			
+				exec('df /dev/root -h', $out);
+				preg_match_all('/[0-9][.]?[0-9]?G?/', $out[1], $matches);
+				list($total, $used, $available, $percentage) = $matches[0];
 
-				function decodeSize( $bytes ) {
-					$si_prefix = array( 'B', 'KB', 'MB', 'GB', 'TB', 'EB', 'ZB', 'YB' );
-					$base = 1024;
-					$class = min((int)log($bytes , $base) , count($si_prefix) - 1);
-					return( sprintf('%1.2f' , $bytes / pow($base,$class)) );
-				}	
-				$bytes = disk_free_space("."); 			    
-			    $free =  decodeSize($bytes);
-	
-			    $bytes = disk_total_space("."); 
-			    $total = decodeSize($bytes);
-
-				$used = $total - $free;
-				$percentage = round($used / $total * 100);
-				
 				if($percentage > '80'){
 			    $warning = "<img src=\"app/images/warning.png\" height=\"18\" />";
 			    $bar = "barAmber";
@@ -47,9 +36,8 @@
 				
 				<br/>
 				
-				Total: <strong><?php echo $total ?></strong> GB &middot
-				Free: <strong><?php echo $free ?></strong> GB
-				
+				Total: <strong><?php echo $total ?>B</strong> &middot
+				Free: <strong><?php echo $available ?>B</strong>				
 				</div>
 						
 				<div class="clear"></div>
