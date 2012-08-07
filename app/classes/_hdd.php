@@ -1,12 +1,26 @@
 <?php
 	class hddPercentage {
 		function freeStorage(){
+			exec('df -hT | grep -vE "tmpfs|rootfs|Filesystem"', $drivesarray);
+			?>
+				<div class="sdIcon">
+					<img src="app/images/sd.png" align="middle"> 
+				</div>
+				
+				<div class="sdTitle">
+					Storage
+				</div>
+				
+				<br/><br/><br/><br/><br/>
+			<?php
 			
-				exec('df /dev/root -h', $out);
-				preg_match_all('/[0-9][.]?[0-9]?G?/', $out[1], $matches);
-				list($total, $used, $available, $percentage) = $matches[0];
+			for ($drive=0; $drive<count($drivesarray); $drive++) 
+			{
+				$drivesarray[$drive] = preg_replace('!\s+!', ' ', $drivesarray[$drive]);
+				preg_match_all('/\S+/', $drivesarray[$drive], $drivedetails);
+				list($fs, $type, $size, $used, $available, $percentage, $mounted) = $drivedetails[0];
 
-				if($percentage > '80'){
+				if(rtrim($percentage, '%') > '80'){
 			    $warning = "<img src=\"app/images/warning.png\" height=\"18\" />";
 			    $bar = "barAmber";
 	          } else {
@@ -15,29 +29,27 @@
 	          } 
 				?>
 			
-				<div class="sdIcon">
-					<img src="app/images/sd.png" align="middle"> 
+			
+				<div class="sdName">
+					<?php echo $mounted?>
 				</div>
-				
-				<div class="sdTitle">
-					SD Card
-				</div>
-				
+					
 				<div class="sdWarning">
 					<?php echo $warning ?>
 				</div>
 				
 				<div class="sdText">
 					<div class="graph">
-						<strong class="<?php echo $bar; ?>" style="width:<?php echo $percentage ?>%;"><?php echo $percentage ?>%</strong>
+						<strong class="<?php echo $bar; ?>" style="width:<?php echo $percentage ?>;"><?php echo $percentage ?></strong>
 				</div>
 				
 				<div class="clear"></div>
 				
 				<br/>
 				
-				Total: <strong><?php echo $total ?>B</strong> &middot
-				Free: <strong><?php echo $available ?>B</strong>				
+				Total: <strong><?php echo $size ?>B</strong> &middot
+				Free: <strong><?php echo $available ?>B</strong> &middot		
+				Format: <strong><?php echo $type ?>B</strong>
 				</div>
 						
 				<div class="clear"></div>
@@ -47,6 +59,7 @@
 				
 				
 <?php				
+		}
 		}
 		}
 ?>
